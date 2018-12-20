@@ -252,14 +252,20 @@ public class GridController : MonoBehaviour
         {
             export.Grid.Add(item.selectedOptions);
         }
-        str = JsonConvert.SerializeObject(export);
-        using (FileStream fs = new FileStream(path, FileMode.Create))
-        {
-            using (StreamWriter writer = new StreamWriter(fs))
-            {
-                writer.Write(str);
-            }
-        }
+        str = JsonConvert.SerializeObject(export.Grid);
+        using (StreamWriter file = File.CreateText(path))
+{
+    JsonSerializer serializer = new JsonSerializer();
+    serializer.Serialize(file, export.Grid);
+}
+        //using (FileStream fs = new FileStream(path, FileMode.Create))
+        //{
+        //    using (StreamWriter writer = new StreamWriter(fs))
+        //    {
+        //        writer.Write(str);
+        //    }
+        //}
+        Instruction.text = " file is stored in streamingAsset folder.";
 #if UNITY_EDITOR
         UnityEditor.AssetDatabase.Refresh();
 #endif
