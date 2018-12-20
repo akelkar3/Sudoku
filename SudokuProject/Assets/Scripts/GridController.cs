@@ -34,27 +34,42 @@ public class GridController : MonoBehaviour
     
     public void CreateGrid1()
     {
-        foreach (var item in boxes)
+        for (int i = 0; i < 3; i++)
         {
-            item.FillBox(g1[item.x+item.y]);
+            List<Box> tempBox = boxes.Where(a => a.x == i).ToList();
+            foreach (var item in tempBox)
+            {
+                item.FillBox(g1[item.y + i * 3]);
+            }
+
         }
         Instruction.text = " Select a cell and then select the number to fill the cell.";
     }
     public void CreateGrid2()
     {
-        foreach (var item in boxes)
+        for (int i = 0; i < 3; i++)
         {
-            item.FillBox(g2[item.x + item.y]);
-
+            List<Box> tempBox = boxes.Where(a => a.x == i).ToList();
+            foreach (var item in tempBox)
+            {
+                item.FillBox(g2[item.y+i*3]);
+            }
+           
         }
+        
         Instruction.text = " Select a cell and then select the number to fill the cell.";
 
     }
     public void CreateGrid3()
     {
-        foreach (var item in boxes)
+        for (int i = 0; i < 3; i++)
         {
-            item.FillBox(g3[item.x + item.y]);
+            List<Box> tempBox = boxes.Where(a => a.x == i).ToList();
+            foreach (var item in tempBox)
+            {
+                item.FillBox(g3[item.y + i * 3]);
+            }
+
         }
         Instruction.text = " Select a cell and then select the number to fill the cell.";
 
@@ -115,7 +130,7 @@ public class GridController : MonoBehaviour
             {
                 int rowIndex = j + 3 * i;
                 List<int> row = new List<int>();
-                foreach (var item in boxes)
+                foreach (var item in tempBox)
                 {//looping each box for selected options
 
                     int from = j*3;
@@ -150,19 +165,19 @@ public class GridController : MonoBehaviour
         allGood = AllCellsFilled();
         if (!allGood)
         {
-            Instruction.text = "Invalid Answer";
+            Instruction.text = "Complete all cells";
             return;
         }
         allGood = RowsValid();
         if (!allGood)
         {
-            Instruction.text = "Invalid Answer";
+            Instruction.text = "Invalid Rows fill";
             return;
         }
         allGood = ColumnsValid();
         if (!allGood)
         {
-            Instruction.text = "Invalid Answer";
+            Instruction.text = "Invalid Column Fill";
             return;
         }
         if (allGood)
@@ -217,13 +232,13 @@ public class GridController : MonoBehaviour
         bool isOk = true;
         for (int i = 0; i < (9); i++)
         {
-            int[] row = new int[9];
+            int[] col = new int[9];
             for (int j = 0; j < 9; j++)
             {
-                row[j] = data[j,i];
+                col[j] = data[j,i];
 
             }
-            if (row.Distinct().Count() != row.Count())
+            if (col.Distinct().Count() != col.Count())
             {
                 isOk = false;
                 Instruction.text = "Invalid Columns";
