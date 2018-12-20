@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -8,12 +11,65 @@ public class GridController : MonoBehaviour
     public int selectedCell;
     public int selectedX;
     public int selectedY;
+    List<int[]> g1 = new List<int[]>();
+    List<int[]> g2 = new List<int[]>();
+    List<int[]> g3 = new List<int[]>();
     Box[] boxes;
     int[,] data = new int[9,9];
     // Use this for initialization
     void Start()
     {
         boxes = GetComponentsInChildren<Box>();
+        ParseJson();
+
+    }
+    
+    public void CreateGrid1()
+    {
+        foreach (var item in boxes)
+        {
+            item.FillBox(g1[item.x+item.y]);
+        }
+    }
+    public void CreateGrid2()
+    {
+        foreach (var item in boxes)
+        {
+            item.FillBox(g2[item.x + item.y]);
+        }
+    }
+    public void CreateGrid3()
+    {
+        foreach (var item in boxes)
+        {
+            item.FillBox(g3[item.x + item.y]);
+        }
+    }
+    void ParseJson()
+    {
+        var path = Application.streamingAssetsPath + "/Sudoku.json";
+        var jsonString = File.ReadAllText(path);
+        JObject jdata = JObject.Parse(jsonString);
+        List<JToken> grid1 = jdata["Grid_1"].ToList();
+        List<JToken> grid2 = jdata["Grid_2"].ToList();
+        List<JToken> grid3 = jdata["Grid_3"].ToList();
+       
+        foreach (var item in grid1)
+        {
+            int[] data = item.Select(u => (int)u).ToArray();
+            g1.Add(data);
+        }
+        foreach (var item in grid2)
+        {
+            int[] data = item.Select(u => (int)u).ToArray();
+            g2.Add(data);
+        }
+        foreach (var item in grid3)
+        {
+            int[] data = item.Select(u => (int)u).ToArray();
+            g3.Add(data);
+        }
+
     }
 
     // Update is called once per frame

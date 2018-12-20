@@ -17,9 +17,27 @@ public class Box : MonoBehaviour {
     /// <summary>
     /// method to fill box
     /// </summary>
-  
-    void FillBox(int[] input)
+  public void ResetBox()
     {
+        Text[] cellsText = GetComponentsInChildren<Text>();
+
+        foreach (var item in cellsText)
+        {
+            int index = Convert.ToInt32(item.transform.parent.gameObject.name);
+           
+            //get the button in parent
+            Button cellButton = item.GetComponentInParent<Button>();
+        
+                //set no text and add a listener to the parent
+                item.text = "";
+            cellButton.interactable = true;
+            
+        }
+
+    }
+    public void FillBox(int[] input)
+    {
+        ResetBox();
         for (int i = 0; i < input.Length; i++)
         {
             available[input[i]] = input[i] > 0 ? false : true;
@@ -83,7 +101,8 @@ public class Box : MonoBehaviour {
 	}
     void Start()
     {
-        FillBox(new int[] { 0, 0, 1, 0, 2, 0, 4, 5, 6 });
+        //for testing only
+     //   FillBox(new int[] { 0, 0, 1, 0, 2, 0, 4, 5, 6 });
     }
     /// <summary>
     /// method to check whether this block is unique or not
