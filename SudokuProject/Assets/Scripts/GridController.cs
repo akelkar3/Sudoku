@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Assets.Scripts;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -109,20 +111,30 @@ public class GridController : MonoBehaviour
         {
             //gives 3 boxes ata a time
             List<Box> tempBox = boxes.Where(a => a.x == i ).ToList();
+            for (int j = 0; j < 3; j++)
+            {
+                int rowIndex = j + 3 * i;
+                List<int> row = new List<int>();
+                foreach (var item in boxes)
+                {//looping each box for selected options
 
+                    int from = j*3;
 
-            foreach (var item in boxes)
-            {//looping each box for selected options
-                for (int j = 0; j < 3; j++)
-                {//each selected option has 3 rows of data thus i is multiple of 3 and j is 0-3 in that bunch
-                   for (int k = 0; k < 3; k++)
-                   {//k is for each element in selected options 
-                        data[j + 3 * i, k + 3 * item.y] = item.selectedOptions[k + 3 *j];
-                    }
-                   
-                  //  Debug.Log(data[j + 3 * i,0]);
+                    List<int> valuestoDump = item.selectedOptions.ToList().GetRange(from, 3);
+                    //each selected option has 3 rows of data thus i is multiple of 3 and j is 0-3 in that bunch
+                    row.AddRange(valuestoDump);
+
+                    //  Debug.Log(data[j + 3 * i,0]);
+                }
+                for (int k = 0; k < 9; k++)
+                {
+                    data[rowIndex, k] = row[k];
+
                 }
             }
+           
+           
+        
             var l = 10;
 
         }
@@ -136,10 +148,27 @@ public class GridController : MonoBehaviour
         bool allGood = true;
         //check if any of the cell is left
         allGood = AllCellsFilled();
+        if (!allGood)
+        {
+            Instruction.text = "Invalid Answer";
+            return;
+        }
         allGood = RowsValid();
+        if (!allGood)
+        {
+            Instruction.text = "Invalid Answer";
+            return;
+        }
+        allGood = ColumnsValid();
+        if (!allGood)
+        {
+            Instruction.text = "Invalid Answer";
+            return;
+        }
         if (allGood)
         {
-            Instruction.text = "you have solved the sudoku puzzle.";
+            Instruction.text = "You have solved the puzzel. Congrats";
+        
         }
     }
 
@@ -182,5 +211,57 @@ public class GridController : MonoBehaviour
         }
 
         return isOk;
+    }
+    public bool ColumnsValid()
+    {
+        bool isOk = true;
+        for (int i = 0; i < (9); i++)
+        {
+            int[] row = new int[9];
+            for (int j = 0; j < 9; j++)
+            {
+                row[j] = data[j,i];
+
+            }
+            if (row.Distinct().Count() != row.Count())
+            {
+                isOk = false;
+                Instruction.text = "Invalid Columns";
+                break;
+            }
+            else
+            {
+                Debug.Log("valid Columns :" + i);
+            }
+        }
+
+        return isOk;
+    }
+    
+    public void Export()
+    {
+       
+
+        var path = Application.streamingAssetsPath + "/Grid_Answer.json";
+
+
+        string str ="no parsng happened";
+        GridObject export = new GridObject();
+        export.Grid = new List<int[]>();
+        foreach (var item in boxes)
+        {
+            export.Grid.Add(item.selectedOptions);
+        }
+        str = JsonConvert.SerializeObject(export);
+        using (FileStream fs = new FileStream(path, FileMode.Create))
+        {
+            using (StreamWriter writer = new StreamWriter(fs))
+            {
+                writer.Write(str);
+            }
+        }
+#if UNITY_EDITOR
+        UnityEditor.AssetDatabase.Refresh();
+#endif
     }
 }

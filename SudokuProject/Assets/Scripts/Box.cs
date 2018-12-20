@@ -90,6 +90,7 @@ public class Box : MonoBehaviour {
             Text[] cellsTexts = GetComponentsInChildren<Text>();
           Text cellText=  cellsTexts.Where(a => a.transform.parent.name == cell.ToString()).FirstOrDefault();
             cellText.text = option.ToString();
+            Debug.Log(selectedOptions.ToString());
         }
         else
         {
