@@ -14,17 +14,21 @@ public class Box : MonoBehaviour {
     Dictionary<int, int> filled = new Dictionary<int, int>(); //containing the options filled inside this box and the number of time they are filled
     int selectedCell;
     GridController gridController;
+    public Text Instruction;
     /// <summary>
     /// method to fill box
     /// </summary>
   public void ResetBox()
     {
+        
         Text[] cellsText = GetComponentsInChildren<Text>();
-
+        //initialize the available places
+        
         foreach (var item in cellsText)
         {
             int index = Convert.ToInt32(item.transform.parent.gameObject.name);
            
+            selectedOptions[index]= 0;
             //get the button in parent
             Button cellButton = item.GetComponentInParent<Button>();
         
@@ -74,8 +78,15 @@ public class Box : MonoBehaviour {
     {//check if the selected option is allowed to enter in this box
         if (available[option])
         {
+            //replace the earlier number selected
+            if (selectedOptions[cell] > 0)
+            {
+                available[selectedOptions[cell]] = true;
+                selectedOptions[cell] = 0;
+                
+            }
             selectedOptions[cell] = option;
-            available[cell] = false;
+            available[option] = false;
             Text[] cellsTexts = GetComponentsInChildren<Text>();
           Text cellText=  cellsTexts.Where(a => a.transform.parent.name == cell.ToString()).FirstOrDefault();
             cellText.text = option.ToString();
@@ -89,11 +100,7 @@ public class Box : MonoBehaviour {
     }
 	// Use this for initialization
 	void Awake () {
-        //initialize the available places
-        for (int i = 0; i < available.Length; i++)
-        {
-            available[i] = true;
-        }
+      
         var splitted = transform.name.Split(',');
         x = Convert.ToInt32(splitted[0]);
         y = Convert.ToInt32(splitted[1]);
@@ -132,15 +139,21 @@ public class Box : MonoBehaviour {
  
 	// Update is called once per frame
 	void Update () {
-		
+        //foreach (var item in selectedOptions)
+        //{
+        //    if (item > 0)
+        //    {
+        //        available[item] = false;
+        //    }
+        //    else
+        //    {
+        //        available[item] = true;
+        //    }
+        //}
 	}
     void showMessage(string message)
     {
-        if (EditorUtility.DisplayDialog("Hey!!", message, "Ok"))
-        {
-
-        } 
-       
+        Instruction.text = message;
     }
     
 }

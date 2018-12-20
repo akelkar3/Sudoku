@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridController : MonoBehaviour
 {
@@ -16,11 +17,16 @@ public class GridController : MonoBehaviour
     List<int[]> g3 = new List<int[]>();
     Box[] boxes;
     int[,] data = new int[9,9];
+    public Text Instruction;
     // Use this for initialization
     void Start()
     {
         boxes = GetComponentsInChildren<Box>();
         ParseJson();
+        foreach (var item in boxes)
+        {
+            item.ResetBox();
+        }
 
     }
     
@@ -30,13 +36,17 @@ public class GridController : MonoBehaviour
         {
             item.FillBox(g1[item.x+item.y]);
         }
+        Instruction.text = " Select a cell and then select the number to fill the cell.";
     }
     public void CreateGrid2()
     {
         foreach (var item in boxes)
         {
             item.FillBox(g2[item.x + item.y]);
+
         }
+        Instruction.text = " Select a cell and then select the number to fill the cell.";
+
     }
     public void CreateGrid3()
     {
@@ -44,6 +54,8 @@ public class GridController : MonoBehaviour
         {
             item.FillBox(g3[item.x + item.y]);
         }
+        Instruction.text = " Select a cell and then select the number to fill the cell.";
+
     }
     void ParseJson()
     {
@@ -111,10 +123,64 @@ public class GridController : MonoBehaviour
                   //  Debug.Log(data[j + 3 * i,0]);
                 }
             }
-          //  var l = 10;
+            var l = 10;
 
         }
 
 
+    }
+
+    public void CheckSolution()
+    {
+        getData();
+        bool allGood = true;
+        //check if any of the cell is left
+        allGood = AllCellsFilled();
+        allGood = RowsValid();
+        if (allGood)
+        {
+            Instruction.text = "you have solved the sudoku puzzle.";
+        }
+    }
+
+    private bool AllCellsFilled()
+    {
+        bool returnVal = true;
+        foreach (var item in boxes)
+        {
+            if (item.selectedOptions.Any(a => a == 0))
+            {
+                returnVal = false;
+                Instruction.text = "Some cell(s) are empty.";
+                break;
+            }
+        }
+        return returnVal;
+    }
+    //values in rows is unique? use check value array for true or false
+    public bool RowsValid()
+    {
+        bool isOk = true;
+        for (int i = 0; i <(9) ; i++)
+        {
+            int[] row = new int[9];
+            for (int j = 0; j < 9; j++)
+            {
+                row[j] = data[i, j];
+
+            }
+             if( row.Distinct().Count() != row.Count())
+            {
+                isOk = false;
+                Instruction.text = "Invalid Rows";
+                break;
+            }
+            else
+            {
+                Debug.Log("valid Row :" + i);
+            }
+        }
+
+        return isOk;
     }
 }
